@@ -13,6 +13,7 @@ import base64
 import hashlib
 import hmac
 import sys
+import warnings
 from contextlib import contextmanager
 from datetime import timedelta
 
@@ -49,6 +50,16 @@ if PY3:  # pragma: no cover
 else:  # pragma: no cover
     string_types = basestring,  # pragma: no flakes
     text_type = unicode  # pragma: no flakes
+
+
+class FlaskSecurityWarning(UserWarning):
+    """Display Flask-Security warning."""
+
+
+warnings.simplefilter('always', FlaskSecurityWarning)
+warnings.filterwarnings(
+    'ignore', category=FlaskSecurityWarning, module='flask_security'
+)
 
 
 def login_user(user, remember=None):

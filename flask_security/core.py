@@ -10,6 +10,7 @@
     :license: MIT, see LICENSE for more details.
 """
 
+import warnings
 from datetime import datetime
 
 from flask import current_app, render_template
@@ -27,7 +28,8 @@ from .forms import ChangePasswordForm, ConfirmRegisterForm, \
     ForgotPasswordForm, LoginForm, PasswordlessLoginForm, RegisterForm, \
     ResetPasswordForm, SendConfirmationForm
 from .utils import config_value as cv
-from .utils import get_config, md5, string_types, url_for_security
+from .utils import FlaskSecurityWarning, get_config, md5, string_types, \
+    url_for_security
 from .views import create_blueprint
 
 # Convenient references
@@ -448,6 +450,12 @@ class Security(object):
         """
         self.app = app
         self.datastore = datastore
+
+        if 'SECURITY_PASSWORD_HASH' not in app.config:
+            warnings.warn(FlaskSecurityWarning(
+                'SECURITY_PASSWORD_HASH is not set and it will default to '
+                '"plaintext", which is considered **unsecure**.'
+            ))
 
         for key, value in _default_config.items():
             app.config.setdefault('SECURITY_' + key, value)
